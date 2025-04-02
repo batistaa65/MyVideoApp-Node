@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Video Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Orbitron:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<%= typeof cssFile !== 'undefined' ? cssFile : '/css/style.css' %>">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body>
+    <div id="theme-confirm-bar" class="theme-confirm-bar" style="display: none;">
+        <span id="theme-confirm-message">Theme applied. Is everything working okay?</span>
+        <button id="theme-confirm-btn" class="action-button">Confirm Theme</button>
+        <button id="theme-revert-btn" class="action-button delete-button">Revert to Default</button>
+        <span id="theme-timer-display" style="margin-left: 15px; font-size: 0.9em;"></span>
+    </div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-logo"><a href="/">MyVideoHub</a></div>
+            <div class="header-upload">
+                 <button id="upload-trigger-btn" class="action-button upload-button">Upload</button>
+                 <button id="settings-trigger-btn" class="action-button settings-button">Settings</button>
+            </div>
+        </header>
+        <main class="app-main-content" id="main-content">
+            <div class="loading-indicator">Loading...</div>
+        </main>
+    </div>
+
+    <div id="upload-overlay" class="modal-overlay"></div>
+    <div id="upload-modal" class="modal">
+        <button id="close-upload-modal-btn" class="close-button">&times;</button>
+        <h2>Upload New Item</h2>
+        <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
+            <div><label for="modal-title">Title:</label><input type="text" id="modal-title" name="title"></div>
+            <div><label for="modal-description">Description:</label><textarea id="modal-description" name="description"></textarea></div>
+            <div><label for="upload-category-select">Category:</label><select id="upload-category-select" name="category" required><option value="" disabled selected>-- Select Category --</option></select></div>
+            <div><label for="modal-video_file">File:</label><input type="file" id="modal-video_file" name="video_file" required></div>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <div id="edit-overlay" class="modal-overlay"></div>
+    <div id="edit-modal" class="modal">
+        <button id="close-edit-modal-btn" class="close-button">&times;</button>
+        <h2>Edit Item Details</h2>
+        <form id="edit-form" action="" method="POST">
+            <div><label for="edit-title">Title:</label><input type="text" id="edit-title" name="title"></div>
+            <div><label for="edit-description">Description:</label><textarea id="edit-description" name="description"></textarea></div>
+            <div><label for="edit-category-select">Category:</label><select id="edit-category-select" name="category" required><option value="" disabled>-- Select Category --</option></select></div>
+            <p><small>Filename: <span id="edit-filename"></span></small></p>
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+    <div id="settings-overlay" class="modal-overlay"></div>
+    <div id="settings-modal" class="modal">
+        <button id="close-settings-modal-btn" class="close-button">&times;</button>
+        <h2>Settings</h2>
+        <div class="settings-section"><h3>Media Folder Path</h3><div class="media-folder-form"><label for="media-folder-path">Storage Path:</label><input type="text" id="media-folder-path" placeholder="e.g., videos or /mnt/data/media"><button id="save-media-path-btn" class="action-button">Save Path</button></div><p id="media-path-status" style="margin-top: 5px; font-size: 0.9em;"></p><p>Please paste the desired folder path in the text box above.</p><p><small>Relative (e.g., `my_files`) or absolute paths. Relative is more portable.</small></p></div>
+        <div class="settings-section"><h3>Manage Categories</h3><ul id="category-list"></ul><div class="add-category-form"><input type="text" id="new-category-input" placeholder="New category name"><button id="add-category-btn" class="action-button">Add Category</button></div><p id="settings-category-status" style="margin-top: 5px; font-size: 0.9em;"></p></div>
+        <div class="settings-section"><h3>Select Theme</h3><div class="select-theme-form"><label for="theme-select">Choose Theme:</label><select id="theme-select" name="theme"><option value="">Loading themes...</option></select><button id="save-theme-btn" class="action-button">Save Theme</button><button type="button" id="delete-selected-theme-btn" class="action-button delete-button" style="display: none; margin-left: 10px;">Delete Selected Theme</button></div><p id="theme-status" style="margin-top: 5px; font-size: 0.9em;"></p><p><small>Page will reload after saving theme.</small></p></div>
+        <div class="settings-section"><h3>Upload New Theme CSS</h3><form id="upload-theme-form"><div><label for="theme-file-input">Theme CSS File (.css):</label><input type="file" id="theme-file-input" name="theme_css_file" accept=".css" required></div><button type="submit" class="action-button upload-button">Upload Theme File</button><p id="upload-theme-status" style="margin-top: 10px; font-size: 0.9em;"></p><p><small>Filename determines theme name (e.g., 'theme-yourname.css').</small></p></form></div>
+        <div class="settings-section"><h3>Create Theme from Code</h3><div id="create-theme-form"><div><label for="custom-theme-name">New Theme Name:</label><input type="text" id="custom-theme-name" placeholder="e.g., jungle (will become theme-jungle.css)" required></div><div><label for="custom-theme-css">Paste CSS Code:</label><textarea id="custom-theme-css" rows="12" placeholder="Paste complete CSS rules here..." required></textarea></div><button type="button" id="save-custom-theme-btn" class="action-button">Save Custom Theme</button><p id="custom-theme-status" style="margin-top: 10px; font-size: 0.9em;"></p></div></div>
+    </div>
+
+    <div id="add-category-modal-overlay" class="modal-overlay"></div>
+    <div id="add-category-modal" class="modal">
+         <button id="close-add-category-modal-btn" class="close-button">&times;</button>
+         <h2>Add New Category</h2>
+         <form id="add-category-modal-form">
+             <div><label for="new-category-name-modal">Category Name:</label><input type="text" id="new-category-name-modal" name="name" placeholder="New category name" required></div>
+             <div><label for="new-category-image-modal">Category Image (Optional):</label><input type="file" id="new-category-image-modal" name="category_image" accept="image/*"></div>
+             <button type="submit" id="add-category-submit-btn" class="action-button">Add Category</button>
+         </form>
+         <p id="add-category-modal-status" style="margin-top: 10px; font-size: 0.9em;"></p>
+    </div>
+
+    <div id="image-viewer-overlay" class="modal-overlay image-viewer-overlay"></div>
+    <div id="image-viewer-modal" class="image-viewer">
+        <button id="image-viewer-prev" class="image-viewer-nav prev">&lt;</button>
+        <button id="image-viewer-next" class="image-viewer-nav next">&gt;</button>
+        <button id="close-image-viewer-btn" class="close-button image-viewer-close-btn">&times;</button>
+        <img id="image-viewer-img" src="" alt="Full image view">
+    </div>
+
+    <script src="/js/main.js" defer></script>
+</body>
+</html>

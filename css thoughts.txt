@@ -1,0 +1,30 @@
+Color Focused:
+
+monochrome
+highcontrast
+pastel
+neon
+sepia
+solarized-dark
+solarized-light
+grayscale
+Nature Inspired:
+
+forest
+desert
+mountain
+arctic
+sunset
+sakura
+Material/Abstract/Era:
+
+terminal-green
+terminal-amber
+retro
+steampunk
+cyberpunk
+minimalist-dark
+minimalist-light
+blueprint
+chalkboard
+paper

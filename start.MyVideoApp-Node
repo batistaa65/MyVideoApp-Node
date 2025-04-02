@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Start My Video App
+Comment=Opens a terminal and starts the Node.js video server
+Type=Application
+# IMPORTANT: Replace the Path below with the ACTUAL path to YOUR project folder
+Path=/home/Documents/MyVideoApp-Node
+# Command to execute within that path
+Exec=npm start
+# Set to true to run the command IN a terminal window
+Terminal=true
+# Optional: You can specify an icon path or name
+# Icon=utilities-terminal
